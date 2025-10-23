@@ -1,0 +1,252 @@
+=== Project Overview Report ===
+Thu Oct 23 12:46:30 PM EDT 2025
+
+------------------------------------------------------------
+📄 File: ./activation_functions.c
+------------------------------------------------------------
+
+    #include <math.h>
+    #include <stdio.h>
+
+
+    🔹 double sigmoid(double x)
+    🔹 double leaky_relu(double x, double alpha)
+    🔹 double swish(double x)
+
+
+------------------------------------------------------------
+📄 File: ./activation_functions.h
+------------------------------------------------------------
+
+
+
+
+
+------------------------------------------------------------
+📄 File: ./backpropagation.c
+------------------------------------------------------------
+
+    #include <math.h>
+    #include <stdio.h>
+
+
+    🔹 double calculate_mse(double output_array[], double expected_output_array[], int size)
+    🔹 double clip_gradient_backpropagation(double gradient, double clip_threshold)
+    🔹 void update_weights_last_layer(double loss, double learning_rate, double final_layer_weights[], double semi_final_layer_weights[], int final_layer_size, int semi_final_layer_size, double clip_threshold)
+    🔹 void update_semi_final_layer_weights(double loss, double learning_rate, double semi_final_layer_weights[], int semi_final_layer_size, double clip_threshold)
+
+
+------------------------------------------------------------
+📄 File: ./backpropagation.h
+------------------------------------------------------------
+
+    #include <math.h>  
+
+
+
+
+------------------------------------------------------------
+📄 File: ./Data_Loading_Cleaning.c
+------------------------------------------------------------
+
+    #include <stdio.h>
+    #include <stdlib.h> // FOR MEMORY ALLOCATION
+    #include <string.h> // FOR STRING HANDLING FUNCTIONS
+    #include <ctype.h>  // FOR CHARACTER HANDLING FUNCTIONS (E.G. , TOLOWER )
+
+
+    🔹 char* readFileToString(const char *filename)
+    🔹 char** SplitSentences( char *raw_text )
+    🔹 char* Cleaned_Text(char *raw_text)
+
+
+------------------------------------------------------------
+📄 File: ./Data_Loading_Cleaning.h
+------------------------------------------------------------
+
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <ctype.h>
+
+
+
+
+------------------------------------------------------------
+📄 File: ./Data_Preprocessing.c
+------------------------------------------------------------
+
+    #include "Data_Preprocessing.h"
+    #include <stdlib.h>  // FOR MALLOC AND FREE
+    #include <stdio.h>
+    #include <math.h>    // FOR SQRT
+
+
+    🔹 void scale_matrix(float matrix[ EMBEDDING_SIZE][MATRIX_SIZE])
+    🔹 void min_max_normalize_and_scale(float* data, size_t size, float new_min, float new_max)
+    🔹 size_t get_meaningful_length(const float* data, size_t size)
+    🔹 void Add_Positional_Encoding(float embedding_matrix[][2], int max_sentence_length)
+
+
+------------------------------------------------------------
+📄 File: ./Data_Preprocessing.h
+------------------------------------------------------------
+
+    #include <stddef.h>  // FOR SIZE_T
+    #include <float.h> // For FLT_MAX
+
+
+
+
+------------------------------------------------------------
+📄 File: ./feed_forward_layer.c
+------------------------------------------------------------
+
+    #include <stdio.h>
+    #include <stdlib.h>
+
+
+    🔹 void read_weights(const char* path, double* semi_final_layer_weights, int num_weights)
+
+
+------------------------------------------------------------
+📄 File: ./feed_forward_layer.h
+------------------------------------------------------------
+
+    #include <stdio.h>
+
+
+
+
+------------------------------------------------------------
+📄 File: ./main.c
+------------------------------------------------------------
+
+    #include <stdio.h>
+    #include <math.h>
+    #include <unistd.h>
+    #include <omp.h>
+    #include "Data_Loading_Cleaning.h"
+    #include "Tokenizer.h"
+    #include "Data_Preprocessing.h"
+    #include "transformer_block.h"
+    #include "feed_forward_layer.h"
+    #include "activation_functions.h"
+    #include "backpropagation.h"
+
+
+    🔹 int main()
+
+
+------------------------------------------------------------
+📄 File: ./self_attention_layer.c
+------------------------------------------------------------
+
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <math.h>
+
+
+    🔹 float dot_product(float *a, float *b, int dim)
+    🔹 void softmax(float *input, float *output, int length)
+    🔹 void initialize_embedding(float embedding[VOCAB_SIZE][EMBEDDING_DIM])
+    🔹 void generate_positional_encoding(float positional_encoding[VOCAB_SIZE][EMBEDDING_DIM])
+    🔹 void lookup_embedding(float embedding[VOCAB_SIZE][EMBEDDING_DIM], int token_index, float *output)
+    🔹 void initialize_weight_matrix(float *weight, int rows, int cols)
+    🔹 int main()
+
+
+------------------------------------------------------------
+📄 File: ./test.c
+------------------------------------------------------------
+
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <limits.h>
+
+
+    🔹 void scale_matrix(double matrix[MATRIX_SIZE][MATRIX_SIZE])
+    🔹 void print_matrix(double matrix[MATRIX_SIZE][MATRIX_SIZE])
+    🔹 int main()
+
+
+------------------------------------------------------------
+📄 File: ./Tokenizer.c
+------------------------------------------------------------
+
+    #include <stdio.h>
+    #include <stdlib.h> // FOR MEMORY ALLOCATION, rand() and RAND_MAX
+    #include <string.h> // FOR STRING HANDLING FUNCTIONS
+    #include <ctype.h>  // FOR CHARACTER HANDLING FUNCTIONS (E.G. , TOLOWER )
+    #include <math.h>     // FOR sin() AND cos()
+
+    typedef struct word_token_node {
+        struct word_token_node *next; // POINTER TO THE NEXT NODE IN THE LINKED LIST
+
+    🔹 unsigned int hash(const char* word)
+    🔹 void insertWord(const char* word)
+    🔹 int isWordPresent(const char* word)
+    🔹 void Print_Tokens_And_Ids()
+    🔹 unsigned int getTokenId(const char* word)
+    🔹 float generate_random()
+    🔹 float** Word_Embedding_Generation(int token_id)
+    🔹 void extractUniqueWords(char** sentences)
+    🔹 void getEmbeddingByTokenId(unsigned int token_id, double expected_embedding[2])
+
+
+------------------------------------------------------------
+📄 File: ./Tokenizer.h
+------------------------------------------------------------
+
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <ctype.h>
+
+    typedef struct word_token_node {
+        struct word_token_node *next;
+
+
+
+------------------------------------------------------------
+📄 File: ./transformer_block.c
+------------------------------------------------------------
+
+    #include "transformer_block.h"
+    #include <math.h>
+    #include <stdlib.h>
+    #include <stdio.h>
+
+
+    🔹 double* positional_encoding( int index, int vector_size )
+    🔹 double read_single_value_from_file(const char* filename)
+    🔹 void initialize_matrices_from_files()
+    🔹 void print_matrix(const char* name, double matrix[MATRIX_SIZE][MATRIX_SIZE])
+    🔹 void dot_product(double A[MATRIX_SIZE][MATRIX_SIZE], double B[MATRIX_SIZE][MATRIX_SIZE], double result[MATRIX_SIZE][MATRIX_SIZE])
+    🔹 void transpose(double matrix[MATRIX_SIZE][MATRIX_SIZE], double transposed[MATRIX_SIZE][MATRIX_SIZE])
+    🔹 void softmax(double matrix[MATRIX_SIZE][MATRIX_SIZE])
+    🔹 void calculate_attention(double Q[MATRIX_SIZE][MATRIX_SIZE], double K[MATRIX_SIZE][MATRIX_SIZE], double V[MATRIX_SIZE][MATRIX_SIZE], double result[MATRIX_SIZE][MATRIX_SIZE])
+    🔹 void matrix_multiply(double A[][MATRIX_SIZE], double B[][MATRIX_SIZE], double result[][MATRIX_SIZE], int rowsA, int colsA, int colsB)
+    🔹 void apply_softmax(double matrix[][MATRIX_SIZE], int rows, int cols)
+    🔹 double clip_gradient_transformer(double gradient)
+    🔹 void compute_self_attention(float embedding_matrix[][MATRIX_SIZE], double k_matrix[][MATRIX_SIZE], double q_matrix[][MATRIX_SIZE], double v_matrix[][MATRIX_SIZE], int length, double self_attention_matrix[][MATRIX_SIZE])
+    🔹 void add_matrices(float matrix1[][MATRIX_SIZE], double matrix2[][MATRIX_SIZE], double result_matrix[][MATRIX_SIZE], int rows, int cols)
+    🔹 void update_attention_matrices(double loss, double learning_rate)
+
+
+------------------------------------------------------------
+📄 File: ./transformer_block.h
+------------------------------------------------------------
+
+    #include <math.h>
+    #include <stdlib.h>
+
+
+
+
+============================================================
+📊 SUMMARY
+============================================================
+Total files: 17
+Total functions: 0
+
