@@ -11,40 +11,22 @@ revealing every computational step under the hood of deep learning.
 written entirely in **C** to expose the true mechanics of sequence modeling and attention.
 
 It demonstrates:
-- Modular, low-level implementations of every Transformer subsystem.  
-- Self-attention, feed-forward layers, normalization, and backpropagation.  
-- Step-by-step numerical transparency for debugging or embedded experimentation.  
-- Extensible design for OpenCL/Vulkan compute or hardware-level deployment.  
+- Modular, low-level implementations of every Transformer subsystem  
+- Self-attention, feed-forward layers, normalization, and backpropagation  
+- Step-by-step numerical transparency for debugging or embedded experimentation  
+- Extensible design for OpenCL/Vulkan compute or hardware-level deployment  
 
 ---
 
-## 🧩 Architecture Layout
+## 🧩 Architecture (Mermaid Diagram)
 ```mermaid
 graph TD
   A[Input Text] -->|Tokenize| B[Tokenizer.c]
   B --> C[Embedding + Positional Encoding]
   C --> D[Self-Attention Layer]
   D --> E[Feed Forward Layer]
-  E --> F[Output Probabilities]
-  F --> G[Backpropagation + Weight Update]
+  E --> F[Output]
 ````
-
----
-
-## 📂 Project Layout
-
-| File                        | Description                                             |
-| --------------------------- | ------------------------------------------------------- |
-| `main.c`                    | Entry point; runs the model and orchestrates all stages |
-| `activation_functions.c/h`  | Core activations (`sigmoid`, `swish`, `relu`)           |
-| `backpropagation.c/h`       | Loss functions, gradient clipping                       |
-| `Data_Loading_Cleaning.c/h` | Handles text preprocessing                              |
-| `Data_Preprocessing.c/h`    | Normalization and positional encoding                   |
-| `feed_forward_layer.c/h`    | Fully connected neural layer                            |
-| `self_attention_layer.c`    | Q/K/V attention, softmax, weighting                     |
-| `transformer_block.c/h`     | Integrates all core modules                             |
-| `Tokenizer.c/h`             | Token-to-ID mapping, embeddings                         |
-| `text_data.txt`             | Demo dataset for sentence encoding                      |
 
 ---
 
@@ -60,27 +42,24 @@ gcc -O2 -Wall -Wextra -fopenmp \
 
 ---
 
-## 🧮 Math Overview
+## 🧠 Math Overview
 
-**Self-Attention:**
 [
 Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt{d_k}})V
 ]
-**Feed-Forward:**
+
 [
 FFN(x)=max(0,xW_1+b_1)W_2+b_2
 ]
-**Positional Encoding:**
+
 [
-PE(pos,2i)=sin(\frac{pos}{10000^{2i/d_{model}}})
-]
-[
+PE(pos,2i)=sin(\frac{pos}{10000^{2i/d_{model}}}),\quad
 PE(pos,2i+1)=cos(\frac{pos}{10000^{2i/d_{model}}})
 ]
 
 ---
 
-## 🧠 Mermaid Diagram — Full Transformer Pass
+## 🧩 Sequence Flow (Mermaid)
 
 ```mermaid
 sequenceDiagram
@@ -90,22 +69,17 @@ sequenceDiagram
     participant A as Self-Attention
     participant F as Feed Forward
     participant O as Output
-    X->>T: Tokenize text
+    X->>T: Tokenize
     T->>E: Generate embeddings
-    E->>A: Compute Q,K,V and attention weights
+    E->>A: Compute attention weights
     A->>F: Pass context vector
-    F->>O: Output predictions
-
-MIT License © 2025 **PStudios Automate**
+    F->>O: Output prediction
+```
 
 ---
 
-## 💬 Credits
+## 🧾 License
 
-Part of **Karma-Cortex** research:
+MIT License © 2025 **PStudios Automate**
 
-* Symbolic + Neural hybrid cognition
-* GPU-native AI runtime design
-* C-based introspective architecture
-
-Made with ❤️ by **PStudios Automate**
+Made with ❤️ by PStudios Automate
