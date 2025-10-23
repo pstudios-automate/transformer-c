@@ -1,1 +1,32 @@
+# ===============================
+# transformer-c Git Ignore Rules
+# ===============================
+
+# Build Artifacts
+a.out
+*.o
+*.out
+*.so
+*.dll
+*.exe
+
+# Logs and output
+*.log
+my_terminal_output.log
+project_overview.txt
+
+# Shell scripts not part of codebase
 f.sh
+*.sh~
+
+# Temporary / editor files
+*~
+*.swp
+*.tmp
+*.bak
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
