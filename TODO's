@@ -1,0 +1,357 @@
+Got it. Transformer-C only. Clean separation.
+
+Here are the priority issues for transformer-c alone:
+
+📁 Directory Structure
+
+```
+.github/
+└── ISSUES/
+    ├── P0-CRITICAL/
+    │   └── 001-latency-typo.txt
+    ├── P1-HIGH/
+    │   ├── 001-arena-allocator.txt
+    │   ├── 002-simd-research.txt
+    │   └── 003-training-benchmarks.txt
+    ├── P2-MEDIUM/
+    │   └── 001-edge-deployment-guide.txt
+    └── templates/
+        ├── critical.txt
+        ├── high.txt
+        └── medium.txt
+```
+
+🚨 P0-CRITICAL/001-latency-typo.txt
+
+```txt
+Title: 🚨 P0 CRITICAL: Fix training benchmark documentation errors
+
+Priority: P0 (Critical - credibility issue)
+Type: Documentation/Bug
+Assignee: @you
+Due: TODAY
+Labels: p0, critical, documentation, bug
+
+Description:
+External review identified potential unit/documentation errors in training benchmarks.
+Need to verify and correct all performance claims.
+
+Impact:
+- Misleading performance claims damage credibility
+- Users may make incorrect architectural decisions
+- Contradicts "transparent systems" philosophy
+
+Tasks:
+- [ ] Audit all benchmark numbers in README.md
+- [ ] Verify 0.101s startup claim (document measurement method)
+- [ ] Verify memory usage claims (4x vs PyTorch)
+- [ ] Add "Measurement Methodology" section
+- [ ] Include raw benchmark data in /benchmarks/data/
+- [ ] Create reproducible benchmark scripts
+
+Validation:
+- [ ] All benchmarks are reproducible with provided scripts
+- [ ] Units are correct and consistent
+- [ ] Comparisons are fair (same hardware, same model size)
+- [ ] Document limitations of comparisons
+
+Notes:
+Transparency includes being accurate about performance claims.
+```
+
+🔴 P1-HIGH/001-arena-allocator.txt
+
+```txt
+Title: 🧠 P1: Implement arena allocator for contiguous weight storage
+
+Priority: P1 (High - affects performance scaling)
+Type: Performance/Architecture
+Assignee: @you
+Due: 7 days
+Labels: p1, high, performance, memory, architecture
+
+Description:
+Architectural review identified pointer chasing in current struct design.
+Implement single-contiguous-memory allocator to improve cache locality.
+
+Current Problem:
+- Layer structs contain pointers to other pointers
+- Causes cache prediction failures (cache misses)
+- Memory fragmentation from multiple mallocs
+- Poor memory locality for embedded systems
+
+Solution:
+Implement arena allocator where all model weights live in one contiguous memory block.
+
+Technical Spec:
+```c
+// Arena allocator design
+typedef struct {
+    float* arena;           // Single malloc for ALL weights
+    size_t capacity;        // Total bytes allocated
+    size_t used;            // Bytes currently used
+    uint32_t magic;         // Validation magic number
+    uint32_t version;       // Arena layout version
+} TransformerArena;
+
+// Functions
+TransformerArena* arena_create(size_t size);
+void* arena_alloc(TransformerArena* arena, size_t size);
+void arena_reset(TransformerArena* arena);
+void arena_destroy(TransformerArena* arena);
+```
+
+Implementation Tasks:
+
+· Create include/allocator.h with arena interface
+· Implement src/allocator.c with arena functions
+· Convert model loading to use arena in src/model.c
+· Update backpropagation to work with arena offsets
+· Benchmark cache misses: perf stat -e cache-misses
+· Document in docs/MEMORY_LAYOUT.md
+
+Files:
+
+· src/allocator.c
+· include/allocator.h
+· src/model.c (modify)
+· tests/test_allocator.c
+· docs/MEMORY_LAYOUT.md
+
+Acceptance Criteria:
+
+· Single malloc for entire model weights
+· 20%+ reduction in cache misses measured
+· All tests pass
+· Memory footprint identical or better
+· No performance regression
+
+Notes:
+Essential for embedded deployment where cache efficiency is critical.
+
+```
+
+## **🔴 P1-HIGH/002-simd-research.txt**
+```txt
+Title: ⚡ P1: Research SIMD intrinsics for matrix operations
+
+Priority: P1 (High - performance bottleneck)
+Type: Research/Performance
+Assignee: TBD (looking for contributor)
+Due: 14 days
+Labels: p1, high, research, performance, simd, good-first-issue
+
+Description:
+Architectural review identified pure C loops as bottleneck for >10M parameters.
+Research and prototype SIMD implementations for core operations.
+
+Background:
+- Current bottleneck: Naive C loops in matrix operations
+- Target: 5-10x speedup on core operations
+- Focus: Embedded (ARM NEON) and server (x86 AVX2)
+
+Research Tasks:
+- [ ] Profile current matrix_multiply() to identify hotspots
+- [ ] Research ARM NEON intrinsics (Raspberry Pi targets)
+- [ ] Research x86 AVX2/AVX-512 intrinsics
+- [ ] Compare against OpenBLAS baseline
+- [ ] Document findings in docs/RESEARCH_SIMD.md
+
+Implementation Plan:
+```c
+// Prototype interface
+#ifdef __ARM_NEON
+    #include <arm_neon.h>
+    void matrix_multiply_neon(const float* A, const float* B, float* C, int M, int N, int K);
+#endif
+
+#ifdef __AVX2__
+    #include <immintrin.h>
+    void matrix_multiply_avx2(const float* A, const float* B, float* C, int M, int N, int K);
+#endif
+```
+
+Tasks:
+
+· Create src/simd/ directory
+· Implement NEON 4x4 kernel prototype
+· Implement AVX2 8x8 kernel prototype
+· Add runtime detection and fallback
+· Benchmark vs current implementation
+· Integrate into main matrix operations
+
+Files:
+
+· src/simd/neon_ops.c
+· src/simd/avx_ops.c
+· include/simd_ops.h
+· tests/benchmark_simd.c
+· CMakeLists.txt (add detection)
+
+Acceptance Criteria:
+
+· SIMD implementations compute correctly
+· 5x speedup on ARM (Raspberry Pi 4)
+· 8x speedup on x86 with AVX2
+· Graceful fallback to pure C
+· All existing tests pass
+
+Notes:
+Start small with proof-of-concept before full implementation.
+
+```
+
+## **🔴 P1-HIGH/003-training-benchmarks.txt**
+```txt
+Title: 📊 P1: Add comprehensive training benchmarks
+
+Priority: P1 (High - validates unique value)
+Type: Benchmarking/Validation
+Assignee: @you
+Due: 10 days
+Labels: p1, high, benchmarking, documentation, validation
+
+Description:
+Review highlighted: "99% of C transformers are inference-only. You have built a Training Engine."
+Need to quantify and document training performance to validate this claim.
+
+Why This Matters:
+- Proves "on-device fine-tuning" is feasible
+- Shows tradeoffs vs PyTorch (our unique value)
+- Validates architectural decisions
+- Provides data for users to make decisions
+
+Benchmark Setup:
+Compare on same hardware:
+1. transformer-c training loop
+2. PyTorch CPU training (fair comparison)
+3. Optional: PyTorch with optimizations
+
+Metrics:
+- Memory usage (peak RSS)
+- Training time per epoch
+- CPU utilization
+- Energy consumption (if measurable)
+- Accuracy convergence rate
+
+Tasks:
+- [ ] Create benchmarks/train_benchmark.sh
+- [ ] Set up reproducible PyTorch baseline
+- [ ] Add timing instrumentation to transformer-c
+- [ ] Run comparative benchmarks
+- [ ] Generate charts and analysis
+- [ ] Document in docs/BENCHMARKS.md
+- [ ] Add summary to README
+
+Files:
+- benchmarks/train_benchmark.sh
+- benchmarks/pytorch_baseline.py
+- benchmarks/analyze_results.py
+- docs/BENCHMARKS.md
+- benchmarks/data/ (raw results)
+
+Deliverables:
+- Comparative performance charts
+- Raw data in CSV format
+- Analysis conclusions
+- Clear recommendations
+
+Notes:
+This is both technical validation and marketing material.
+```
+
+🟡 P2-MEDIUM/001-edge-deployment-guide.txt
+
+```txt
+Title: 📱 P2: Create edge deployment guide and examples
+
+Priority: P2 (Medium - enhances usability)
+Type: Documentation/Examples
+Assignee: TBD
+Due: 21 days
+Labels: p2, medium, documentation, examples, embedded
+
+Description:
+Create practical guide for deploying transformer-c on embedded/edge devices.
+
+Target Platforms:
+- Raspberry Pi 4/5
+- NVIDIA Jetson Nano
+- BeagleBone AI
+- Generic ARM Cortex-A
+- x86 embedded systems
+
+Content:
+1. Cross-compilation guide
+2. Memory optimization for constrained devices
+3. Real-time considerations
+4. Power management
+5. Deployment checklist
+
+Examples:
+- [ ] Raspberry Pi image classification
+- [ ] Jetson Nano real-time inference
+- [ ] BeagleBone sensor data processing
+- [ ] Minimal Docker deployment
+
+Tasks:
+- [ ] Create docs/DEPLOYMENT_GUIDE.md
+- [ ] Add examples/embedded/ directory
+- [ ] Create Dockerfile for minimal deployment
+- [ ] Add cross-compilation instructions
+- [ ] Include performance tuning tips
+- [ ] Add troubleshooting section
+
+Files:
+- docs/DEPLOYMENT_GUIDE.md
+- examples/embedded/raspberry_pi/
+- examples/embedded/jetson/
+- Dockerfile.minimal
+- scripts/cross-compile.sh
+
+Acceptance Criteria:
+- [ ] Guide covers at least 3 platforms
+- [ ] Examples are runnable with clear instructions
+- [ ] Includes performance optimization tips
+- [ ] Has troubleshooting section
+- [ ] Linked from README
+
+Notes:
+Essential for adoption by embedded developers.
+```
+
+📋 templates/high.txt
+
+```txt
+Title: [P1] 
+
+Priority: P1 (High)
+Type: 
+Assignee: 
+Due: 
+Labels: p1, high
+
+Description:
+
+
+Problem:
+
+
+Solution:
+
+
+Tasks:
+- [ ] 
+
+
+Files:
+
+
+Acceptance Criteria:
+- [ ] 
+
+
+Notes:
+
+```
+
