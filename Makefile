@@ -28,3 +28,25 @@ test: $(TARGET)
     ./$(TARGET) --test 
  
 .PHONY: all clean test 
+
+# Cross-platform support
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Linux)
+    TARGET = bin/transformer_c
+endif
+ifeq ($(UNAME_S),Darwin)
+    TARGET = bin/transformer_c
+endif
+ifeq ($(OS),Windows_NT)
+    TARGET = bin/transformer_c.exe
+endif
+
+# Help target
+help:
+    @echo "Available targets:"
+    @echo "  all     - Build project (default)"
+    @echo "  clean   - Remove build artifacts"
+    @echo "  test    - Run tests"
+    @echo "  help    - Show this help"
+
+.PHONY: help
