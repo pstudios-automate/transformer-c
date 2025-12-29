@@ -74,7 +74,7 @@ char** SplitSentences( char *raw_text ) {
 };
 
 
-char* Cleaned_Text(char *raw_text) {
+char* Cleaned_Text(const char* raw_text) {
 
     // GET THE LENGTH OF THE INPUT STRING
 
@@ -137,3 +137,4 @@ char* Cleaned_Text(char *raw_text) {
 
     return cleaned_text;
 }
+

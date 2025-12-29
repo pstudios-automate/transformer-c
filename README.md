@@ -1,85 +1,52 @@
-# 🧠 transformer-c
-
-A foundational **Transformer neural network implemented purely in C**, built for transparency, learning, and performance.  
-This project reconstructs the architecture of modern attention-based models (like GPT and BERT) from scratch —  
-revealing every computational step under the hood of deep learning.
-
----
-
-## 🚀 Overview
-`transformer-c` is a **minimal, educational, and modular implementation** of a Transformer neural network,  
-written entirely in **C** to expose the true mechanics of sequence modeling and attention.
-
-It demonstrates:
-- Modular, low-level implementations of every Transformer subsystem  
-- Self-attention, feed-forward layers, normalization, and backpropagation  
-- Step-by-step numerical transparency for debugging or embedded experimentation  
-- Extensible design for OpenCL/Vulkan compute or hardware-level deployment  
-
----
-
-## 🧩 Architecture (Mermaid Diagram)
-```mermaid
-graph TD
-  A[Input Text] -->|Tokenize| B[Tokenizer.c]
-  B --> C[Embedding + Positional Encoding]
-  C --> D[Self-Attention Layer]
-  D --> E[Feed Forward Layer]
-  E --> F[Output]
-````
-
----
-
-## ⚙️ Build
-
-```bash
-gcc -O2 -Wall -Wextra -fopenmp \
-    main.c activation_functions.c backpropagation.c Data_Loading_Cleaning.c \
-    Data_Preprocessing.c feed_forward_layer.c Tokenizer.c transformer_block.c \
-    self_attention_layer.c -lm -o transformer_main
-./transformer_main
-```
-
----
-
-## 🧠 Math Overview
-
-[
-Attention(Q,K,V)=softmax(\frac{QK^T}{\sqrt{d_k}})V
-]
-
-[
-FFN(x)=max(0,xW_1+b_1)W_2+b_2
-]
-
-[
-PE(pos,2i)=sin(\frac{pos}{10000^{2i/d_{model}}}),\quad
-PE(pos,2i+1)=cos(\frac{pos}{10000^{2i/d_{model}}})
-]
-
----
-
-## 🧩 Sequence Flow (Mermaid)
-
-```mermaid
-sequenceDiagram
-    participant X as Input Text
-    participant T as Tokenizer
-    participant E as Embedding
-    participant A as Self-Attention
-    participant F as Feed Forward
-    participant O as Output
-    X->>T: Tokenize
-    T->>E: Generate embeddings
-    E->>A: Compute attention weights
-    A->>F: Pass context vector
-    F->>O: Output prediction
-```
-
----
-
-## 🧾 License
-
-MIT License © 2025 **PStudios Automate**
-
-Made with ❤️ by PStudios Automate
+# Transformer-C 
+ 
+A complete transformer neural network implementation in C with interactive training. 
+ 
+## Features 
+- Transformer architecture with 12 attention heads 
+- Interactive REPL for training and testing 
+- Model saving and loading 
+- Text generation and prediction 
+- Built-in analysis tools 
+ 
+## Quick Start 
+ 
+### Build the project 
+\`\`\`bash 
+make 
+\`\`\` 
+ 
+### Run the REPL 
+\`\`\`bash 
+.\bin\transformer_c.exe 
+\`\`\` 
+ 
+## REPL Commands 
+- load <model>      - Load saved model 
+- train <epochs>    - Train model 
+- predict <text>    - Predict next word 
+- generate <length> - Generate text 
+- save <name>       - Save model 
+- info              - Show model info 
+- weights           - Show weights 
+- list              - List models 
+- help              - Show help 
+- exit              - Exit REPL 
+ 
+## Model Architecture 
+- Attention Heads: 12 (4 layers) 
+- Embedding Dimension: 2 
+- Matrix Size: 2x2 per head 
+- Semi-final layer: 33,280 parameters 
+- Final layer: 130 parameters 
+- Max sequence length: 512 tokens 
+ 
+## Building 
+\`\`\`bash 
+make clean 
+make 
+make test 
+\`\`\` 
+ 
+## License 
+MIT License 
